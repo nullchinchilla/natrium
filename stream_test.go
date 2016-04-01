@@ -4,7 +4,6 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rc4"
-	"fmt"
 	"testing"
 )
 
@@ -14,7 +13,6 @@ func TestStream(t *testing.T) {
 	lele := make([]byte, 16)
 	lol.XORKeyStream(lele, lele)
 	loll.XORKeyStream(lele, lele)
-	fmt.Printf("%v\n", lele)
 }
 
 func BenchmarkStream(b *testing.B) {
