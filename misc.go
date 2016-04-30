@@ -19,6 +19,15 @@ func HexDecode(str string) ([]byte, error) {
 	return hex.DecodeString(str)
 }
 
+// CTCompare returns 0 if the two byte strings are identical, -1 if a is
+// less than b (little-endian), and 1 if a is larger than b.
+func CTCompare(a []byte, b []byte) int {
+	if len(a) != len(b) {
+		panic("unequal lengths passed to CTCompare")
+	}
+	return int(C.sodium_compare(g2cbt(a), g2cbt(b), C.size_t(len(a))))
+}
+
 func g2cbt(f []byte) *C.uchar {
 	if len(f) > 0 {
 		return (*C.uchar)(&f[0])

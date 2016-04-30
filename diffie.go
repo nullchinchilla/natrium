@@ -34,6 +34,17 @@ func ECDHSecret(our_priv ECDHPrivate, their_publ ECDHPublic) []byte {
 	return toret
 }
 
+func TripleECDH(ourAuth ECDHPrivate, theirAuth ECDHPublic, ourEph ECDHPrivate, theirEph ECDHPublic) []byte {
+	gEA := ECDHSecret(ourEph, theirAuth)
+	gAE := ECDHSecret(ourAuth, theirEph)
+	gEE := ECDHSecret(ourEph, theirEph)
+	if CTCompare(ourEph.PublicKey(), theirEph) == -1 {
+		return SecureHash(append(append(gEA, gAE...), gEE...), nil)
+	} else {
+		return SecureHash(append(append(gAE, gEA...), gEE...), nil)
+	}
+}
+
 func init() {
 	C.sodium_init()
 	ECDHKeyLength = C.crypto_scalarmult_BYTES

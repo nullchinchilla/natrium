@@ -68,6 +68,16 @@ func (priv EdDSAPrivate) Sign(message []byte) []byte {
 	return signature
 }
 
+// ToECDH converts an EdDSA private key deterministically to a ECDH private key
+func (priv EdDSAPrivate) ToECDH() ECDHPrivate {
+	out := make([]byte, ECDHKeyLength)
+	rv := C.crypto_sign_ed25519_sk_to_curve25519(g2cbt(out), g2cbt(priv))
+	if rv != 0 {
+		panic("crypto_sign_ed25519_sk_to_curve25519 returned non-zero")
+	}
+	return out
+}
+
 func (publ EdDSAPublic) MarshalJSON() ([]byte, error) {
 	return json.Marshal([]byte(publ))
 }
@@ -89,6 +99,16 @@ func (publ EdDSAPublic) Verify(message []byte, signature []byte) error {
 		return errors.New("EdDSA signature is forged!")
 	}
 	return nil
+}
+
+// ToECDH converts an EdDSA public key deterministically to a ECDH public key
+func (pub EdDSAPublic) ToECDH() ECDHPublic {
+	out := make([]byte, ECDHKeyLength)
+	rv := C.crypto_sign_ed25519_pk_to_curve25519(g2cbt(out), g2cbt(pub))
+	if rv != 0 {
+		panic("crypto_sign_ed25519_sk_to_curve25519 returned non-zero")
+	}
+	return out
 }
 
 func init() {

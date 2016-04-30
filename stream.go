@@ -13,7 +13,7 @@ type natrStream struct {
 	buffer   []byte
 }
 
-// Stream creates a raw Salsa20 streamer based on the key and nonce.
+// Stream creates a raw ChaCha20 streamer based on the key and nonce.
 func Stream(key []byte, nonce []byte) cipher.Stream {
 	lol := new([32]byte)
 	if len(key) != 32 {
