@@ -2,6 +2,7 @@ package natrium
 
 import (
 	"encoding/hex"
+	"unsafe"
 )
 
 // #cgo LDFLAGS: -Wl,-Bstatic -lsodium -Wl,-Bdynamic
@@ -34,4 +35,8 @@ func g2cbt(f []byte) *C.uchar {
 	} else {
 		return nil
 	}
+}
+
+func FillRandom(b []byte) {
+	C.randombytes_buf(unsafe.Pointer(&b[0]), C.size_t(len(b)))
 }

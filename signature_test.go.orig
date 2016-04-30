@@ -6,7 +6,10 @@ func TestSignatureNormal(t *testing.T) {
 	priv := EdDSAGenerateKey()
 	message := []byte("Hello World")
 	signature := priv.Sign(message)
-	fmt.Println(len(signature))
+<<<<<<< HEAD
+	//fmt.Println(len(signature))
+=======
+>>>>>>> af63cc3bb175ae77c12a0f9dcc1a3d10a0c87457
 	err := priv.PublicKey().Verify(message, signature)
 	if err != nil {
 		t.Fail()

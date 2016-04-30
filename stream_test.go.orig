@@ -13,6 +13,10 @@ func TestStream(t *testing.T) {
 	lele := make([]byte, 16)
 	lol.XORKeyStream(lele, lele)
 	loll.XORKeyStream(lele, lele)
+<<<<<<< HEAD
+	//fmt.Printf("%v\n", lele)
+=======
+>>>>>>> af63cc3bb175ae77c12a0f9dcc1a3d10a0c87457
 }
 
 func BenchmarkStream(b *testing.B) {
