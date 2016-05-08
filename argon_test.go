@@ -5,9 +5,9 @@ import "testing"
 func BenchmarkArgon(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		pwd := make([]byte, 8)
-		FillRandom(pwd)
+		RandBytes(pwd)
 		salt := make([]byte, PasswordSaltLen)
-		FillRandom(salt)
-		PasswordHash(pwd, salt, 10, 64*1024*1024)
+		RandBytes(salt)
+		PasswordHash(pwd, salt, 5, 64*1024*1024)
 	}
 }

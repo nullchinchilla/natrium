@@ -37,6 +37,10 @@ func g2cbt(f []byte) *C.uchar {
 	}
 }
 
-func FillRandom(b []byte) {
-	C.randombytes_buf(unsafe.Pointer(&b[0]), C.size_t(len(b)))
+func g2cst(f []byte) *C.char {
+	if len(f) > 0 {
+		return (*C.char)(unsafe.Pointer(&f[0]))
+	} else {
+		return nil
+	}
 }

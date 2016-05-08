@@ -18,6 +18,9 @@ var _AEADNonceLength = 0
 var _AEADOverheadBytes = 0
 
 func (ctx *natrAEAD) Seal(dst, nonce, plaintext, data []byte) []byte {
+	if nonce == nil {
+		nonce = make([]byte, _AEADNonceLength)
+	}
 	out := make([]byte, len(plaintext)+_AEADOverheadBytes)
 	rv := C.crypto_aead_chacha20poly1305_encrypt(g2cbt(out), nil,
 		g2cbt(plaintext), C.ulonglong(len(plaintext)), g2cbt(data), C.ulonglong(len(data)),
@@ -29,6 +32,9 @@ func (ctx *natrAEAD) Seal(dst, nonce, plaintext, data []byte) []byte {
 }
 
 func (ctx *natrAEAD) Open(dst, nonce, ciphertext, data []byte) ([]byte, error) {
+	if nonce == nil {
+		nonce = make([]byte, _AEADNonceLength)
+	}
 	out := make([]byte, len(ciphertext)-_AEADOverheadBytes)
 	rv := C.crypto_aead_chacha20poly1305_decrypt(g2cbt(out), nil, nil,
 		g2cbt(ciphertext), C.ulonglong(len(ciphertext)), g2cbt(data), C.ulonglong(len(data)),

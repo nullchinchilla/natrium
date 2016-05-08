@@ -4,6 +4,7 @@ package natrium
 // #include <stdio.h>
 // #include <sodium.h>
 import "C"
+import "unsafe"
 
 // RandUint32 returns a random uint32.
 func RandUint32() uint32 {
@@ -17,5 +18,5 @@ func RandUint32LT(lim uint32) uint32 {
 
 // RandBytes fills the given byte slice with random values.
 func RandBytes(b []byte) {
-	C.randombytes_buf(g2cbt(b), C.size_t(len(b)))
+	C.randombytes_buf(unsafe.Pointer(g2cbt(b)), C.size_t(len(b)))
 }
