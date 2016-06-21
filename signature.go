@@ -29,13 +29,25 @@ var EdDSAPublicLength = 0
 var EdDSAPrivateLength = 0
 var EdDSASignatureLength = 0
 
-// EdDSAGenerateKeys generates an EdDSA private key. The public key
+// EdDSAGenerateKey generates an EdDSA private key. The public key
 // can be derived from the private key, so there is no issue.
 // Keys are represented by byte slices, and can be cast to and from them.
 func EdDSAGenerateKey() EdDSAPrivate {
 	priv := make([]byte, EdDSAPrivateLength)
 	publ := make([]byte, EdDSAPublicLength)
 	rv := C.crypto_sign_keypair((*C.uchar)(&publ[0]), (*C.uchar)(&priv[0]))
+	if rv != 0 {
+		panic("crypto_sign_keypair returned non-zero")
+	}
+	return priv
+}
+
+// EdDSADeriveKey derives an EdDSA private key from an arbitrary seed.
+func EdDSADeriveKey(seed []byte) EdDSAPrivate {
+	priv := make([]byte, EdDSAPrivateLength)
+	publ := make([]byte, EdDSAPublicLength)
+	seed = SecureHash(seed, nil)[:C.crypto_sign_SEEDBYTES]
+	rv := C.crypto_sign_seed_keypair(g2cbt(publ), g2cbt(priv), g2cbt(seed))
 	if rv != 0 {
 		panic("crypto_sign_keypair returned non-zero")
 	}
