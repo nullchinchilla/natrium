@@ -3,7 +3,7 @@ package natrium
 import "crypto/rand"
 
 // #cgo darwin CFLAGS: -I/usr/local/include
-// #cgo darwin LDFLAGS: -l/usr/local/lib/libsodium.a
+// #cgo darwin LDFLAGS: /usr/local/lib/libsodium.a
 // #cgo linux windows android LDFLAGS: -Wl,-Bstatic -lsodium -Wl,-Bdynamic
 // #include <stdio.h>
 // #include <sodium.h>
