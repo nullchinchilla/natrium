@@ -46,6 +46,6 @@ func (ctx *natrStream) XORKeyStream(dst, src []byte) {
 	C.crypto_stream_chacha20_xor_ic(buffhand, buffhand,
 		C.ulonglong(16384), (*C.uchar)(&ctx.nonce[0]),
 		C.uint64_t(ctx.blockcnt), (*C.uchar)(&ctx.key[0]))
-	ctx.blockcnt += 1
+	ctx.blockcnt++
 	ctx.XORKeyStream(dst, src)
 }

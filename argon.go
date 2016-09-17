@@ -8,8 +8,10 @@ package natrium
 import "C"
 import "unsafe"
 
+// PasswordSaltLen gives the length of the salt parameter to StretchKey
 var PasswordSaltLen int
 
+// StretchKey uses the Argon2 algorithm to create a 256-bit key based upon a password and a salt. This function is deterministic given a certain opslimit and memlimit.
 func StretchKey(pwd []byte, salt []byte, opslimit int, memlimit int) []byte {
 	if salt == nil {
 		salt = make([]byte, PasswordSaltLen)
@@ -27,6 +29,7 @@ func StretchKey(pwd []byte, salt []byte, opslimit int, memlimit int) []byte {
 	return toret
 }
 
+// PasswordHash uses the Argon2 algorithm to create an ASCII string which includes opslimit, memlimit, a random salt, and a memory-hard hash. It's designed to be stored in databases and directly used with PasswordVerify.
 func PasswordHash(pwd []byte, opslimit int, memlimit int) string {
 	out := make([]byte, C.crypto_pwhash_STRBYTES)
 	retval := C.crypto_pwhash_str(g2cst(out), g2cst(pwd), C.ulonglong(len(pwd)),
@@ -37,6 +40,7 @@ func PasswordHash(pwd []byte, opslimit int, memlimit int) string {
 	return string(out[:len(out)-1])
 }
 
+// PasswordVerify verifies that the given password corresponds to the given salted hash string (of the format returned by PasswordHash).
 func PasswordVerify(pwd []byte, hash string) bool {
 	haha := []byte(hash)
 	haha = append(haha, 0)
