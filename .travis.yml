@@ -6,6 +6,9 @@ go:
     - tip
 
 install:
-    - sudo apt-get install libsodium-dev
+    - wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.11.tar.gz -P /tmp
+    - tar -xvf -C /tmp/ /tmp/libsodium-1.0.11.tar.gz
+    - cd /tmp/libsodium-1.0.11
+    - ./configure && make && make install
 
 sudo: required
