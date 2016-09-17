@@ -5,7 +5,7 @@ go:
     - 1.6
     - tip
 
-install:
+before_install:
     - wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.11.tar.gz
     - tar -xvf libsodium-1.0.11.tar.gz
     - cd libsodium-1.0.11
