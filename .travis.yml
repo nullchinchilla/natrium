@@ -7,3 +7,5 @@ go:
 
 install:
     - apt-get install libsodium-dev
+
+sudo: required
