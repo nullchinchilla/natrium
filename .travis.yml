@@ -6,6 +6,6 @@ go:
     - tip
 
 install:
-    - apt-get install libsodium-dev
+    - sudo apt-get install libsodium-dev
 
 sudo: required
