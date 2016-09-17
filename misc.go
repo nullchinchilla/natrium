@@ -14,16 +14,17 @@ import "C"
 
 // TODO use the sodium encode and decode
 
+// HexEncode encodes a byte array to a hexadecimal string.
 func HexEncode(bts []byte) string {
 	return hex.EncodeToString(bts)
 }
 
+// HexDecode decodes a hexadecimal string to a byte array.
 func HexDecode(str string) ([]byte, error) {
 	return hex.DecodeString(str)
 }
 
-// CTCompare returns 0 if the two byte strings are identical, -1 if a is
-// less than b (little-endian), and 1 if a is larger than b.
+// CTCompare returns 0 if the two byte strings are identical, -1 if a is less than b (little-endian), and 1 if a is larger than b. It runs in constant time given a particular length of a and b.
 func CTCompare(a []byte, b []byte) int {
 	if len(a) != len(b) {
 		panic("unequal lengths passed to CTCompare")
@@ -34,15 +35,17 @@ func CTCompare(a []byte, b []byte) int {
 func g2cbt(f []byte) *C.uchar {
 	if len(f) > 0 {
 		return (*C.uchar)(&f[0])
-	} else {
-		return nil
 	}
+	return nil
 }
 
 func g2cst(f []byte) *C.char {
 	if len(f) > 0 {
 		return (*C.char)(unsafe.Pointer(&f[0]))
-	} else {
-		return nil
 	}
+	return nil
+}
+
+func init() {
+	C.sodium_init()
 }

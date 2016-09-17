@@ -93,7 +93,6 @@ func (ctx *dummyAEAD) Overhead() int {
 }
 
 func init() {
-	C.sodium_init()
 	_AEADKeyLength = int(C.crypto_aead_chacha20poly1305_keybytes())
 	_AEADNonceLength = int(C.crypto_aead_chacha20poly1305_npubbytes())
 	_AEADOverheadBytes = int(C.crypto_aead_chacha20poly1305_abytes())

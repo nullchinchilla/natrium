@@ -33,7 +33,3 @@ func SecureHash(message []byte, key []byte) []byte {
 		keyptr, keylen)
 	return out
 }
-
-func init() {
-	C.sodium_init()
-}

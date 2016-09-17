@@ -13,10 +13,10 @@ import (
 // #include <sodium.h>
 import "C"
 
-// EdDSA private key type
+// EdDSAPrivate represents an Ed25519 private key.
 type EdDSAPrivate []byte
 
-// EdDSA public key type
+// EdDSAPublic represents an Ed25519 public key.
 type EdDSAPublic []byte
 
 func (k EdDSAPublic) String() string {
@@ -27,9 +27,14 @@ func (k EdDSAPrivate) String() string {
 	return fmt.Sprintf("dsaprv:%x", []byte(k))
 }
 
-var EdDSAPublicLength = 0
-var EdDSAPrivateLength = 0
-var EdDSASignatureLength = 0
+// EdDSAPublicLength is the length of an EdDSA public key.
+var EdDSAPublicLength = C.crypto_sign_PUBLICKEYBYTES
+
+// EdDSAPrivateLength is the length of an EdDSA private key.
+var EdDSAPrivateLength = C.crypto_sign_SECRETKEYBYTES
+
+// EdDSASignatureLength is the length of an EdDSA signature.
+var EdDSASignatureLength = C.crypto_sign_BYTES
 
 // EdDSAGenerateKey generates an EdDSA private key. The public key
 // can be derived from the private key, so there is no issue.
@@ -57,10 +62,10 @@ func EdDSADeriveKey(seed []byte) EdDSAPrivate {
 }
 
 // PublicKey obtains the public component of an EdDSA private key.
-func (priv EdDSAPrivate) PublicKey() EdDSAPublic {
+func (k EdDSAPrivate) PublicKey() EdDSAPublic {
 	toret := make([]byte, EdDSAPublicLength)
 	rv := C.crypto_sign_ed25519_sk_to_pk((*C.uchar)(&toret[0]),
-		(*C.uchar)(&priv[0]))
+		(*C.uchar)(&k[0]))
 	if rv != 0 {
 		panic("crypto_sign_ed25519_sk_to_pk returned non-zero")
 	}
@@ -68,38 +73,39 @@ func (priv EdDSAPrivate) PublicKey() EdDSAPublic {
 }
 
 // Sign signs a message using the given EdDSA private key, returning the signature.
-func (priv EdDSAPrivate) Sign(message []byte) []byte {
+func (k EdDSAPrivate) Sign(message []byte) []byte {
 	signature := make([]byte, EdDSASignatureLength)
 	rv := C.crypto_sign_detached(
 		(*C.uchar)(&signature[0]),
 		nil,
 		(*C.uchar)(&message[0]),
 		C.ulonglong(len(message)),
-		(*C.uchar)(&priv[0]))
+		(*C.uchar)(&k[0]))
 	if rv != 0 {
 		panic("crypto_sign_detached returned non-zero")
 	}
 	return signature
 }
 
-// ToECDH converts an EdDSA private key deterministically to a ECDH private key
-func (priv EdDSAPrivate) ToECDH() ECDHPrivate {
+// ToECDH converts an EdDSA private key deterministically to a ECDH private key.
+func (k EdDSAPrivate) ToECDH() ECDHPrivate {
 	out := make([]byte, ECDHKeyLength)
-	rv := C.crypto_sign_ed25519_sk_to_curve25519(g2cbt(out), g2cbt(priv))
+	rv := C.crypto_sign_ed25519_sk_to_curve25519(g2cbt(out), g2cbt(k))
 	if rv != 0 {
 		panic("crypto_sign_ed25519_sk_to_curve25519 returned non-zero")
 	}
 	return out
 }
 
-func (publ EdDSAPublic) MarshalJSON() ([]byte, error) {
-	return json.Marshal([]byte(publ))
+// MarshalJSON implements the MarshalJSON interface.
+func (k EdDSAPublic) MarshalJSON() ([]byte, error) {
+	return json.Marshal([]byte(k))
 }
 
 // Verify verifies a signature and a message using a public key. If there is
 // a problem, then a non-nil value would be returned. A nil value means
 // everything is fine.
-func (publ EdDSAPublic) Verify(message []byte, signature []byte) error {
+func (k EdDSAPublic) Verify(message []byte, signature []byte) error {
 	if len(signature) != EdDSASignatureLength {
 		panic(fmt.Sprintf("Signature passed has the wrong length (%v != %v)",
 			len(signature), EdDSASignatureLength))
@@ -108,7 +114,7 @@ func (publ EdDSAPublic) Verify(message []byte, signature []byte) error {
 		(*C.uchar)(&signature[0]),
 		(*C.uchar)(&message[0]),
 		C.ulonglong(len(message)),
-		(*C.uchar)(&publ[0]))
+		(*C.uchar)(&k[0]))
 	if rv != 0 {
 		return errors.New("EdDSA signature is forged!")
 	}
@@ -116,18 +122,11 @@ func (publ EdDSAPublic) Verify(message []byte, signature []byte) error {
 }
 
 // ToECDH converts an EdDSA public key deterministically to a ECDH public key
-func (pub EdDSAPublic) ToECDH() ECDHPublic {
+func (k EdDSAPublic) ToECDH() ECDHPublic {
 	out := make([]byte, ECDHKeyLength)
-	rv := C.crypto_sign_ed25519_pk_to_curve25519(g2cbt(out), g2cbt(pub))
+	rv := C.crypto_sign_ed25519_pk_to_curve25519(g2cbt(out), g2cbt(k))
 	if rv != 0 {
 		panic("crypto_sign_ed25519_sk_to_curve25519 returned non-zero")
 	}
 	return out
-}
-
-func init() {
-	C.sodium_init()
-	EdDSAPrivateLength = C.crypto_sign_SECRETKEYBYTES
-	EdDSAPublicLength = C.crypto_sign_PUBLICKEYBYTES
-	EdDSASignatureLength = C.crypto_sign_BYTES
 }
