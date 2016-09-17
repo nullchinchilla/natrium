@@ -6,4 +6,4 @@ go:
     - tip
 
 install:
-    - apt install libsodium-dev
+    - apt-get install libsodium-dev
