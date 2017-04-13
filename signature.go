@@ -116,7 +116,7 @@ func (k EdDSAPublic) Verify(message []byte, signature []byte) error {
 		C.ulonglong(len(message)),
 		(*C.uchar)(&k[0]))
 	if rv != 0 {
-		return errors.New("EdDSA signature is forged!")
+		return errors.New("EdDSA signature is forged")
 	}
 	return nil
 }
