@@ -37,6 +37,11 @@ func PasswordHash(pwd []byte, opslimit int, memlimit int) string {
 	if retval != 0 {
 		panic("crypto_pwhash_str returned non-zero!")
 	}
+	for i := range out {
+		if out[i] == 0 {
+			return string(out[:i])
+		}
+	}
 	return string(out[:len(out)-1])
 }
 
